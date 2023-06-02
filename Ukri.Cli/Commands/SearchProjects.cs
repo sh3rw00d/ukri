@@ -24,12 +24,22 @@ public class SearchProjects : Command
             .Accept
             .Add(new MediaTypeWithQualityHeaderValue("application/vnd.rcuk.gtr.json-v7"));
 
-        var response = await httpClient.GetAsync($"/gtr/api/projects?q={Query}");
-        response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync();
-
-        var searchProjectsResponse = JsonConvert.DeserializeObject<SearchProjectsResponse>(json);
+        var size = 100;
+        var page = 0;
+        var projects = new List<Project>();
+        var searchProjectsResponse = new SearchProjectsResponse();
+        do
+        {
+            page += 1;
+            
+            var response = await httpClient.GetAsync($"/gtr/api/projects?q={Query}&s={size}&p={page}");
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync();
+            searchProjectsResponse = JsonConvert.DeserializeObject<SearchProjectsResponse>(json);
+            Log.Information("Pagination: {@Pagination}", new { searchProjectsResponse.Page, searchProjectsResponse.TotalPages});
+            projects.AddRange(searchProjectsResponse.Projects);
+        } while (page != searchProjectsResponse.TotalPages);
         
-        Log.Information("Response: {@Response}", searchProjectsResponse);
+        Log.Information("Projects: {@Projects}", projects);
     }
 }

@@ -1,9 +1,38 @@
-﻿namespace Ukri.Cli;
+﻿using CommandLine;
+using Serilog;
+using Serilog.Events;
 
-public class Command
+namespace Ukri.Cli;
+
+public abstract class Command
 {
-    public int Execute()
+    [Option('l', "LogLevel", Required = false, Default = LogEventLevel.Debug)]
+    public LogEventLevel LogLevel { get; set; }
+    
+    protected abstract Task ExecuteImplAsync();
+    
+    public async Task ExecuteAsync()
     {
-        return 0;
+        InitialiseLogging();
+
+        Log.Information("Executing {@Command}", this);
+
+        try
+        {
+            await ExecuteImplAsync();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error occurred executing command");
+        }
     }
+
+    private void InitialiseLogging()
+    {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .MinimumLevel.Is(LogLevel)
+            .CreateLogger();
+    }
+    
 }

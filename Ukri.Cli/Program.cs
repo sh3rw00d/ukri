@@ -6,11 +6,16 @@ namespace Ukri.Cli;
 public static class Program
 {
     private static int Main(string[] args) {
-        return Parser.Default.ParseArguments<AddOptions, CommitOptions, CloneOptions>(args)
+        return Parser.Default.ParseArguments<CommitOptions, SearchProjects>(args)
             .MapResult(
-                (AddOptions command) => command.Execute(),
-                (CommitOptions command) => command.Execute(),
-                (CloneOptions command) => command.Execute(),
+                (CommitOptions command) => Execute(command),
+                (SearchProjects command) => Execute(command),
                 _ => 1);
+    }
+
+    private static int Execute(Command command)
+    {
+        command.ExecuteAsync().Wait();
+        return 0;
     }
 }

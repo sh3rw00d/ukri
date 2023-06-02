@@ -3,6 +3,10 @@
 namespace Ukri.Cli.Commands;
 
 [Verb("commit", HelpText = "Record changes to the repository.")]
-class CommitOptions : Command {
-    //commit options here
+public class CommitOptions : Command {
+
+    protected override Task ExecuteImplAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

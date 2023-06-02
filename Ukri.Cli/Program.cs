@@ -6,10 +6,10 @@ namespace Ukri.Cli;
 public static class Program
 {
     private static int Main(string[] args) {
-        return Parser.Default.ParseArguments<CommitOptions, SearchProjects>(args)
+        return Parser.Default.ParseArguments<SearchProjects, GetFund>(args)
             .MapResult(
-                (CommitOptions command) => Execute(command),
                 (SearchProjects command) => Execute(command),
+                (GetFund command) => Execute(command),
                 _ => 1);
     }
 

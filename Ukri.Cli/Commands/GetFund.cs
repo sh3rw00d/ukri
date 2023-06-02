@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Ukri.Cli.Api;
 
@@ -11,9 +12,9 @@ public class GetFund : Command
     [Option('i', Required = true)] 
     public string Id { get; set; }
 
-    protected override async Task ExecuteImplAsync()
+    protected override async Task ExecuteImplAsync(IServiceProvider serviceProvider)
     {
-        using var apiClient = new ApiClient();
+        using var apiClient = serviceProvider.GetService<ApiClient>();
 
         var fund = await apiClient.GetFundAsync(Id);
         

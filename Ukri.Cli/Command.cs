@@ -9,7 +9,7 @@ public abstract class Command
     [Option('l', "LogLevel", Required = false, Default = LogEventLevel.Debug)]
     public LogEventLevel LogLevel { get; set; }
     
-    protected abstract Task ExecuteImplAsync();
+    protected abstract Task ExecuteImplAsync(IServiceProvider serviceProvider);
     
     public async Task ExecuteAsync()
     {
@@ -19,7 +19,9 @@ public abstract class Command
 
         try
         {
-            await ExecuteImplAsync();
+            var serviceProvider = ServiceProviderFactory.Create();
+
+            await ExecuteImplAsync(serviceProvider);
         }
         catch (Exception ex)
         {
